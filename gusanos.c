@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.2 2000/03/12 03:16:39 luis Exp $
+/* $Id: gusanos.c,v 1.3 2000/07/17 01:13:15 luis Exp $
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
  * Version UNIX, con ncurses.
@@ -21,7 +21,7 @@
 #define MAX_LONGITUD    100
 #define MIN_GUSANOS     3
 #define MAX_GUSANOS     30
-#define RETARDO()	
+#define RETARDO()		if (delay_flag) sleep(1);
 #define my_random(X) (random()%(X))
 
 #ifdef USE_COLORS
@@ -29,6 +29,7 @@ int colors;
 int want_colors = TRUE;
 #endif
 int debug = 0;
+int delay_flag = FALSE;
 
 #ifdef USE_COLORS
 imprime(c, x, y, col)
@@ -263,11 +264,12 @@ refworm lista_gusanos = NULL; /* lista con los gusanos */
 
 void do_usage()
 {
-	printf("Uso: gusanos [ -p prob ] [ tam ... ]\n");
+	printf("Uso: gusanos [ -s ] [ -p prob ] [ tam ... ]\n");
 	printf("parametros:\n");
 	printf("   -p prob permite indicar la probabilidad de cambio de direccion de los\n");
 	printf("           gusanos.\n");
 	printf("   -d      opción de depurado\n");
+	printf("   -s      utilizar un delay de 1s.\n");
 #ifdef USE_COLORS
 	printf("   -c      opción de eliminación de colores.  No usa colores\n");
 #endif
@@ -282,9 +284,9 @@ char *argv [];
 	  int opt, i;
 
 #ifdef USE_COLORS
-	  while ((opt = getopt(argc, argv, "p:dc")) != EOF) {
+	  while ((opt = getopt(argc, argv, "p:dcs")) != EOF) {
 #else
-	  while ((opt = getopt(argc, argv, "p:d")) != EOF) {
+	  while ((opt = getopt(argc, argv, "p:ds")) != EOF) {
 #endif
 	  	switch(opt){
 		case 'd': debug = TRUE; break;
@@ -294,6 +296,8 @@ char *argv [];
 		case 'p':
 			prob_c_direc = atoi(optarg);
 			break;
+		case 's':
+			delay_flag = TRUE; break;
 		case 'h':
 		default:
 			do_usage(); exit(0);
@@ -313,7 +317,7 @@ char *argv [];
 	  }
 	  colors = 1;
 	  if (want_colors && has_colors()) {
-			  if (can_change_color()) {
+			  /* if (can_change_color()) { */
 #define DEFCOL(X) if (COLOR_PAIRS > colors) init_pair(colors++, X, COLOR_BLACK);
 				DEFCOL(COLOR_RED);
 				DEFCOL(COLOR_GREEN);
@@ -321,7 +325,7 @@ char *argv [];
 				DEFCOL(COLOR_BLUE);
 				DEFCOL(COLOR_MAGENTA);
 				DEFCOL(COLOR_CYAN);
-			  } else colors = COLOR_PAIRS;
+			  /*} else colors = COLOR_PAIRS; */
 	  }
 	  if (debug) {
 	  	printw("COLORS == %d\n", colors);
@@ -408,4 +412,4 @@ char *argv [];
       }
 } /* main */
 
-/* $Id: gusanos.c,v 1.2 2000/03/12 03:16:39 luis Exp $ */
+/* $Id: gusanos.c,v 1.3 2000/07/17 01:13:15 luis Exp $ */
