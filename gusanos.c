@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.3 2000/07/17 01:13:15 luis Exp $
+/* $Id: gusanos.c,v 1.4 2002/02/01 11:48:19 luis Exp $
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
  * Version UNIX, con ncurses.
@@ -30,6 +30,7 @@ int want_colors = TRUE;
 #endif
 int debug = 0;
 int delay_flag = FALSE;
+int ascii_chars = FALSE;
 
 #ifdef USE_COLORS
 imprime(c, x, y, col)
@@ -118,18 +119,18 @@ struct {
 /* inicializamos la tabla de movimientos, definida justo aquí arriba */
 init_tabla_movim()
 {
-	tabla_movim[ARRIBA   ][GIRO_I].caracter = ACS_URCORNER;
-	tabla_movim[ARRIBA   ][RECTO ].caracter = ACS_VLINE;
-	tabla_movim[ARRIBA   ][GIRO_D].caracter = ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][GIRO_I].caracter = ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][RECTO ].caracter = ACS_HLINE;
-	tabla_movim[IZQUIERDA][GIRO_D].caracter = ACS_LLCORNER;
-	tabla_movim[ABAJO    ][GIRO_I].caracter = ACS_LLCORNER;
-	tabla_movim[ABAJO    ][RECTO ].caracter = ACS_VLINE;
-	tabla_movim[ABAJO    ][GIRO_D].caracter = ACS_LRCORNER;
-	tabla_movim[DERECHA  ][GIRO_I].caracter = ACS_LRCORNER;
-	tabla_movim[DERECHA  ][RECTO ].caracter = ACS_HLINE;
-	tabla_movim[DERECHA  ][GIRO_D].caracter = ACS_URCORNER;
+	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '+' : ACS_URCORNER;
+	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
+	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? '+' : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? '+' : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
+	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '+' : ACS_LLCORNER;
+	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '+' : ACS_LLCORNER;
+	tabla_movim[ABAJO    ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
+	tabla_movim[ABAJO    ][GIRO_D].caracter = ascii_chars ? '+' : ACS_LRCORNER;
+	tabla_movim[DERECHA  ][GIRO_I].caracter = ascii_chars ? '+' : ACS_LRCORNER;
+	tabla_movim[DERECHA  ][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
+	tabla_movim[DERECHA  ][GIRO_D].caracter = ascii_chars ? '+' : ACS_URCORNER;
 
 	tabla_movim[ARRIBA   ][GIRO_I].nueva_dir = IZQUIERDA;
 	tabla_movim[ARRIBA   ][RECTO ].nueva_dir = ARRIBA;
@@ -284,9 +285,9 @@ char *argv [];
 	  int opt, i;
 
 #ifdef USE_COLORS
-	  while ((opt = getopt(argc, argv, "p:dcs")) != EOF) {
+	  while ((opt = getopt(argc, argv, "p:dcsa")) != EOF) {
 #else
-	  while ((opt = getopt(argc, argv, "p:ds")) != EOF) {
+	  while ((opt = getopt(argc, argv, "p:dsa")) != EOF) {
 #endif
 	  	switch(opt){
 		case 'd': debug = TRUE; break;
@@ -298,6 +299,8 @@ char *argv [];
 			break;
 		case 's':
 			delay_flag = TRUE; break;
+		case 'a':
+			ascii_chars = TRUE; break;
 		case 'h':
 		default:
 			do_usage(); exit(0);
@@ -412,4 +415,4 @@ char *argv [];
       }
 } /* main */
 
-/* $Id: gusanos.c,v 1.3 2000/07/17 01:13:15 luis Exp $ */
+/* $Id: gusanos.c,v 1.4 2002/02/01 11:48:19 luis Exp $ */
