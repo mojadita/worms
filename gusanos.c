@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.5 2009/01/22 16:04:48 luis Exp $
+/* $Id: gusanos.c,v 1.6 2010/01/03 16:01:35 luis Exp $
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
  * Version UNIX, con ncurses.
@@ -26,7 +26,11 @@
 #endif
 #define my_random(X) (random()%(X))
 
-#ifdef USE_COLORS
+#ifndef USE_COLORS
+#define USE_COLORS 1
+#endif
+
+#if USE_COLORS
 int colors;
 int want_colors = TRUE;
 #endif
@@ -34,7 +38,7 @@ int debug = 0;
 int delay_flag = FALSE;
 int ascii_chars = FALSE;
 
-#ifdef USE_COLORS
+#if USE_COLORS
 imprime(c, x, y, col)
 {
 		mvaddch(y,x, COLOR_PAIR(col) | c);
@@ -54,7 +58,7 @@ typedef struct posicion {
 }posicion, *refposicion;
 
 typedef struct worm {
-#ifdef USE_COLORS
+#if USE_COLORS
        int color;
 #endif
        int max_longitud;
@@ -214,7 +218,7 @@ refworm w;
 
       if (podemos_mover){ /* movemos */
          /* imprimimos el cuello en la antigua posici¢n */
-#ifdef USE_COLORS
+#if USE_COLORS
          imprime (tabla_movim [dir_act][tipo_movim].caracter,
                  cabe->x,
                  cabe->y,
@@ -232,7 +236,7 @@ refworm w;
          tablero [posx][posy] = TRUE;
 
          /* pintamos la nueva cabeza */
-#ifdef USE_COLORS
+#if USE_COLORS
          imprime ('O', posx, posy, w->color);
 #else
          imprime ('O', posx, posy);
@@ -248,7 +252,7 @@ refworm w;
             posy = cola->y;
 
             /* limpiamos la zona de la pantalla afectada */
-#ifdef USE_COLORS
+#if USE_COLORS
             imprime (' ', posx, posy, 0);
 #else
             imprime (' ', posx, posy);
@@ -273,7 +277,7 @@ void do_usage()
 	printf("           gusanos.\n");
 	printf("   -d      opción de depurado\n");
 	printf("   -s      utilizar un delay de 1s.\n");
-#ifdef USE_COLORS
+#if USE_COLORS
 	printf("   -c      opción de eliminación de colores.  No usa colores\n");
 #endif
 	printf("   tam     indica el tamaóo en caracteres del gusano.\n");
@@ -286,14 +290,14 @@ char *argv [];
       refworm gusano_actual;
 	  int opt, i;
 
-#ifdef USE_COLORS
+#if USE_COLORS
 	  while ((opt = getopt(argc, argv, "p:dcsa")) != EOF) {
 #else
 	  while ((opt = getopt(argc, argv, "p:dsa")) != EOF) {
 #endif
 	  	switch(opt){
 		case 'd': debug = TRUE; break;
-#ifdef USE_COLORS
+#if USE_COLORS
 		case 'c': want_colors = FALSE; break;
 #endif
 		case 'p':
@@ -313,7 +317,7 @@ char *argv [];
 
       srandom (time(NULL));
 	  initscr();
-#ifdef USE_COLORS
+#if USE_COLORS
 	  start_color();
 	  if (debug) {
 			  printw ("has_colors() == %d\n", has_colors());
@@ -349,7 +353,7 @@ char *argv [];
       while (argc){
             refworm p;
             p = (refworm) malloc (sizeof (worm));
-#ifdef USE_COLORS
+#if USE_COLORS
 	    p->color = has_colors() ? my_random (colors) : 0;
 		if (debug)
 				printw("COLOR DEL GUSANO: %d\n", p->color);
@@ -380,7 +384,7 @@ char *argv [];
          while (argc){
             refworm p;
             p = (refworm) malloc (sizeof (worm));
-#ifdef USE_COLORS
+#if USE_COLORS
 	        p->color = has_colors() ?my_random (colors) : 0;
 			if (debug)
 					printw("COLOR DEL GUSANO: %d\n", p->color);
@@ -398,7 +402,7 @@ char *argv [];
             argc--;
          }
       }
-#ifdef USE_COLORS
+#if USE_COLORS
 	  if(debug) {
 	  	refresh();
 	  	sleep(5);
@@ -417,4 +421,4 @@ char *argv [];
       }
 } /* main */
 
-/* $Id: gusanos.c,v 1.5 2009/01/22 16:04:48 luis Exp $ */
+/* $Id: gusanos.c,v 1.6 2010/01/03 16:01:35 luis Exp $ */
