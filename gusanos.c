@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.6 2010/01/03 16:01:35 luis Exp $
+/* $Id: gusanos.c,v 1.7 2011/08/04 14:44:28 luis Exp $
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
  * Version UNIX, con ncurses.
@@ -22,7 +22,7 @@
 #define MIN_GUSANOS     3
 #define MAX_GUSANOS     30
 #ifndef RETARDO
-#define RETARDO()		if (delay_flag) usleep(2000);
+#define RETARDO()		if (delay_flag) usleep(20000);
 #endif
 #define my_random(X) (random()%(X))
 
@@ -421,4 +421,4 @@ char *argv [];
       }
 } /* main */
 
-/* $Id: gusanos.c,v 1.6 2010/01/03 16:01:35 luis Exp $ */
+/* $Id: gusanos.c,v 1.7 2011/08/04 14:44:28 luis Exp $ */
