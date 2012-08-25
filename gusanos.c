@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.8 2012/07/17 22:07:43 luis Exp $
+/* $Id: gusanos.c,v 1.9 2012/08/25 18:43:05 luis Exp $
  * vim: ts=4 sw=4 nu ai
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
@@ -38,6 +38,7 @@ int want_colors = TRUE;
 int debug = 0;
 int delay_flag = FALSE;
 int ascii_chars = FALSE;
+int has_changed_window_size = FALSE;
 
 #if USE_COLORS
 imprime(c, x, y, col)
@@ -279,6 +280,9 @@ char *argv [];
 {
 	refworm gusano_actual;
 	int opt, i;
+	int saved_argc = argc;
+	char **saved_argv = argv;
+	int old_LINES, old_COLS;
 
 #if USE_COLORS
 	while ((opt = getopt(argc, argv, "p:dcsa")) != EOF) {
@@ -400,7 +404,17 @@ char *argv [];
 #endif
 
 	gusano_actual = lista_gusanos;
+	old_LINES = LINES;
+	old_COLS = COLS;
    	while (TRUE){
+		if (LINES != old_LINES || COLS != old_COLS) {
+			int i;
+			endwin();
+			for(i = 0; i < saved_argc; i++)
+				printf("%s[%s]", i ? ", " : "", saved_argv[i]);
+			printf("\n");
+			execvp(saved_argv[0], saved_argv);
+		} /* if */
     	mueve_worm (gusano_actual);
        	gusano_actual = gusano_actual->sig;
        	if (gusano_actual == NULL){
@@ -411,4 +425,4 @@ char *argv [];
     } /* while */
 } /* main */
 
-/* $Id: gusanos.c,v 1.8 2012/07/17 22:07:43 luis Exp $ */
+/* $Id: gusanos.c,v 1.9 2012/08/25 18:43:05 luis Exp $ */
