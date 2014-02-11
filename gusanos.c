@@ -1,4 +1,4 @@
-/* $Id: gusanos.c,v 1.9 2012/08/25 18:43:05 luis Exp $
+/* $Id: gusanos.c,v 1.10 2014/02/11 10:04:04 luis Exp $
  * vim: ts=4 sw=4 nu ai
  * Author: Luis.Colorado@HispaLinux.ES
  * Date: Sat Mar 11 22:05:03 MET 2000
@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ncurses.h>
+#include <ncurses/ncurses.h>
 #include <getopt.h>
 
 #define PROB_C_DIREC    50
@@ -425,4 +425,4 @@ char *argv [];
     } /* while */
 } /* main */
 
-/* $Id: gusanos.c,v 1.9 2012/08/25 18:43:05 luis Exp $ */
+/* $Id: gusanos.c,v 1.10 2014/02/11 10:04:04 luis Exp $ */
