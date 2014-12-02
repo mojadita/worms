@@ -1,0 +1,9 @@
+Curses.h program to display a couple of worms on the screen.
+probability of turn and maximum length of the worm can be
+controlled.  This is a toy to pass the time looking the
+screen and thinking on the important things the life has.
+
+This program is Copyright (C) 1990-2014 Luis Colorado
+<lc@luiscoloradosistemas.com>  It can be distributed under
+the GPL license v3.0. GPL document can be downloaded from
+www.gnu.org.
