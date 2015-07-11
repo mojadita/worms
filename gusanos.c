@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ncurses/ncurses.h>
+#include <curses.h>
 #include <getopt.h>
 
 #define PROB_C_DIREC    50
@@ -23,7 +23,7 @@
 #define MIN_GUSANOS     3
 #define MAX_GUSANOS     30
 #ifndef RETARDO
-#define RETARDO()		if (delay_flag) usleep(20000);
+#define RETARDO()		do {if (delay_flag) usleep(20000);} while(0)
 #endif
 #define my_random(X) (random()%(X))
 
@@ -36,7 +36,7 @@ int colors;
 int want_colors = TRUE;
 #endif
 int debug = 0;
-int delay_flag = FALSE;
+int delay_flag = true;
 int ascii_chars = FALSE;
 int has_changed_window_size = FALSE;
 
@@ -127,18 +127,18 @@ struct {
 /* inicializamos la tabla de movimientos, definida justo aquí arriba */
 init_tabla_movim()
 {
-	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '+' : ACS_URCORNER;
+	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '.' : ACS_URCORNER;
 	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
-	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? '+' : ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? '+' : ACS_ULCORNER;
+	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? '.' : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? '.' : ACS_ULCORNER;
 	tabla_movim[IZQUIERDA][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
-	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '+' : ACS_LLCORNER;
-	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '+' : ACS_LLCORNER;
+	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '`' : ACS_LLCORNER;
+	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '`' : ACS_LLCORNER;
 	tabla_movim[ABAJO    ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
-	tabla_movim[ABAJO    ][GIRO_D].caracter = ascii_chars ? '+' : ACS_LRCORNER;
-	tabla_movim[DERECHA  ][GIRO_I].caracter = ascii_chars ? '+' : ACS_LRCORNER;
+	tabla_movim[ABAJO    ][GIRO_D].caracter = ascii_chars ? '\'' : ACS_LRCORNER;
+	tabla_movim[DERECHA  ][GIRO_I].caracter = ascii_chars ? '\'' : ACS_LRCORNER;
 	tabla_movim[DERECHA  ][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
-	tabla_movim[DERECHA  ][GIRO_D].caracter = ascii_chars ? '+' : ACS_URCORNER;
+	tabla_movim[DERECHA  ][GIRO_D].caracter = ascii_chars ? '.' : ACS_URCORNER;
 
 	tabla_movim[ARRIBA   ][GIRO_I].nueva_dir = IZQUIERDA;
 	tabla_movim[ARRIBA   ][RECTO ].nueva_dir = ARRIBA;
@@ -298,7 +298,7 @@ char *argv [];
 			prob_c_direc = atoi(optarg);
 			break;
 		case 's':
-			delay_flag = TRUE; break;
+			delay_flag = FALSE; break;
 		case 'a':
 			ascii_chars = TRUE; break;
 		case 'h':
