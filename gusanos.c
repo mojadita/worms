@@ -129,8 +129,8 @@ init_tabla_movim()
 {
 	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '.' : ACS_URCORNER;
 	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
-	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? '.' : ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? '.' : ACS_ULCORNER;
+	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? ',' : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? ',' : ACS_ULCORNER;
 	tabla_movim[IZQUIERDA][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
 	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '`' : ACS_LLCORNER;
 	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '`' : ACS_LLCORNER;
