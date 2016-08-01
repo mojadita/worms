@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <curses.h>
 #include <getopt.h>
@@ -41,12 +42,12 @@ int ascii_chars = FALSE;
 int has_changed_window_size = FALSE;
 
 #if USE_COLORS
-imprime(c, x, y, col)
+void imprime(int c, int x, int y, int col)
 {
 	mvaddch(y,x, COLOR_PAIR(col) | c);
 } /* imprime */
 #else
-imprime(c, x, y)
+void imprime(int c, int x, int y)
 {
 	mvaddch(y,x, c);
 } /* imprime */
@@ -77,8 +78,7 @@ int prob_c_direc = PROB_C_DIREC;
 
 #define obten_pos_cola(w)         ((w)->lista_puntos->sig)
 
-crea_pos (w, x, y)
-refworm w;
+void crea_pos (refworm w, int x, int y)
 {
 	 refposicion p;
 
@@ -91,8 +91,7 @@ refworm w;
 	 w->longitud_act++;
 } /* crea_pos */
 
-dest_pos (w)
-refworm w;
+void dest_pos (refworm w)
 {
 	 refposicion p, q;
 
@@ -124,8 +123,8 @@ struct {
    int				nueva_dir;
 } tabla_movim [NUM_POSIC][NUM_GIROS];
 
-/* inicializamos la tabla de movimientos, definida justo aquí arriba */
-init_tabla_movim()
+/* inicializamos la tabla de movimientos, definida justo aquÃ­ arriba */
+void init_tabla_movim(void)
 {
 	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '.' : ACS_URCORNER;
 	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
@@ -154,21 +153,20 @@ init_tabla_movim()
 	tabla_movim[DERECHA  ][GIRO_D].nueva_dir = ABAJO;
 } /* init_tabla_movim */
 
-/* -- primero calculamos la nueva direcci¢n,
-      colocamos en la pantalla el caracter correspondiente a la direcci¢n
-      actual y la nueva direcci¢n. Ajustamos la nueva direcci¢n.
-   -- Comprobamos si se puede mover el worm en la nueva direcci¢n.
-      Si es as¡, movemos la cabeza.
-      Si no es as¡, movemos la cola.
-   -- El worm se podr  mover en la nueva direcci¢n si no sobrepasa su lon-
-      gitud m xima permitida y si la casilla a donde va no est  ocupada.
-   -- Para mover la cabeza se coloca el worm en la nueva posici¢n.
-      Se aumenta la posici¢n de cabeza incluyendo la nueva posici¢n en la
+/* -- primero calculamos la nueva direcciÂ¢n,
+      colocamos en la pantalla el caracter correspondiente a la direcciÂ¢n
+      actual y la nueva direcciÂ¢n. Ajustamos la nueva direcciÂ¢n.
+   -- Comprobamos si se puede mover el worm en la nueva direcciÂ¢n.
+      Si es asÂ¡, movemos la cabeza.
+      Si no es asÂ¡, movemos la cola.
+   -- El worm se podrÂ  mover en la nueva direcciÂ¢n si no sobrepasa su lon-
+      gitud mÂ xima permitida y si la casilla a donde va no estÂ  ocupada.
+   -- Para mover la cabeza se coloca el worm en la nueva posiciÂ¢n.
+      Se aumenta la posiciÂ¢n de cabeza incluyendo la nueva posiciÂ¢n en la
       lista de posiciones visitadas de cada worm.
    -- Para mover la cola
 */
-mueve_worm (w)
-refworm w;
+void mueve_worm (refworm w)
 {
 	refposicion cabe, cola;
 	int posx, posy, dir_act, dir_fut, tipo_movim, podemos_mover;
@@ -178,17 +176,18 @@ refworm w;
 	dir_act = w->direccion;
 
 	tipo_movim = RECTO;
-	if (my_random (100) <= prob_c_direc)
-		if (my_random (2)) tipo_movim = GIRO_I;
-		else tipo_movim = GIRO_D;
-
-
+	if (my_random (100) <= prob_c_direc) {
+		if (my_random (2))
+			tipo_movim = GIRO_I;
+		else
+			tipo_movim = GIRO_D;
+	}
 
 	dir_fut = tabla_movim [dir_act][tipo_movim].nueva_dir;
 	posx = cabe->x;
-	posy = cabe->y; /* nueva posici¢n */
+	posy = cabe->y; /* nueva posiciÂ¢n */
 
-	/* calculamos la nueva posici¢n */
+	/* calculamos la nueva posiciÂ¢n */
 	switch (dir_fut){
 	case ARRIBA: posy--; break;
 	case ABAJO: posy++; break;
@@ -203,16 +202,16 @@ refworm w;
 	if (posx < 0 || posx >= COLUMNAS || posy < 0 || posy >= LINEAS)
 		podemos_mover = FALSE;
 
-	/* si esta posici¢n ya est  ocupada no podremos mover */
+	/* si esta posiciÂ¢n ya estÂ  ocupada no podremos mover */
 	if (podemos_mover && tablero [posx][posy])
 		podemos_mover = FALSE;
 
-	/* si la longitud es la longitud m xima, no podremos mover */
+	/* si la longitud es la longitud mÂ xima, no podremos mover */
 	if (w->max_longitud == w->longitud_act)
 		podemos_mover = FALSE;
 
 	if (podemos_mover){ /* movemos */
-		/* imprimimos el cuello en la antigua posici¢n */
+		/* imprimimos el cuello en la antigua posiciÂ¢n */
 #if USE_COLORS
 		imprime (tabla_movim [dir_act][tipo_movim].caracter,
 			cabe->x, cabe->y, w->color);
@@ -224,7 +223,7 @@ refworm w;
 		/* creamos la nueva cabecera */
 		crea_pos (w, posx, posy);
 
-		/* marcamos la nueva posici¢n */
+		/* marcamos la nueva posiciÂ¢n */
 		tablero [posx][posy] = TRUE;
 
 		/* pintamos la nueva cabeza */
@@ -252,7 +251,7 @@ refworm w;
 			/* limpiamos la zona del tablero afectada */
 			tablero [posx][posy] = FALSE;
 
-			/* eliminamos la posici¢n de cola del worm */
+			/* eliminamos la posiciÂ¢n de cola del worm */
 			dest_pos (w);
 		} /* if */
 	} /* if */
@@ -260,23 +259,23 @@ refworm w;
 
 refworm lista_gusanos = NULL; /* lista con los gusanos */
 
-void do_usage()
+void do_usage(void)
 {
 	printf("Uso: gusanos [ -s ] [ -p prob ] [ tam ... ]\n");
-	printf("parametros:\n");
-	printf("   -p prob permite indicar la probabilidad de cambio de direccion de los\n");
+	printf("parÃ¡metros:\n");
+	printf("   -p prob permite indicar la probabilidad de cambio de direcciÃ³n de los\n");
 	printf("           gusanos.\n");
-	printf("   -d      opción de depurado\n");
-	printf("   -s      utilizar un delay de 1s.\n");
+	printf("   -d      opciÃ³n de depurado.\n");
+	printf("   -s      no usar retardo.\n");
+	printf("   -a      usar caracteres ASCII para representar los gusanos.\n");
 #if USE_COLORS
-	printf("   -c      opción de eliminación de colores.  No usa colores\n");
+	printf("   -c      opciÃ³n de eliminaciÃ³n de colores.  No usa colores.\n");
 #endif
-	printf("   tam     indica el tamaóo en caracteres del gusano.\n");
+	printf("   tam     indica el tamaÃ±o en caracteres del gusano.\n");
 } /* do_usage */
 
 /* PROGRAMA PRINCIPAL */
-main (argc, argv)
-char *argv [];
+int main (int argc, char **argv)
 {
 	refworm gusano_actual;
 	int opt, i;
