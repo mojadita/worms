@@ -418,6 +418,7 @@ int main (int argc, char **argv)
        	gusano_actual = gusano_actual->sig;
        	if (gusano_actual == NULL){
 			gusano_actual = lista_gusanos;
+			move(LINES-1, 0);
 			refresh();
 	       	RETARDO();
         } /* if */
