@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include <curses.h>
+#include <ncursesw/curses.h>
 #include <getopt.h>
 
 #define PROB_C_DIREC    50
@@ -409,9 +409,6 @@ int main (int argc, char **argv)
 		if (LINES != old_LINES || COLS != old_COLS) {
 			int i;
 			endwin();
-			for(i = 0; i < saved_argc; i++)
-				printf("%s[%s]", i ? ", " : "", saved_argv[i]);
-			printf("\n");
 			execvp(saved_argv[0], saved_argv);
 		} /* if */
     	mueve_worm (gusano_actual);

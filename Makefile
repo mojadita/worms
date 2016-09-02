@@ -14,7 +14,7 @@ targets = gusanos
 all: $(targets)
 
 gusanos_objs=gusanos.o
-gusanos_libs=-lncurses
+gusanos_libs=-lncursesw
 
 gusanos: $(gusanos_objs)
 	$(CC) $(LDFLAGS) -o gusanos $(gusanos_objs) $(gusanos_libs)
