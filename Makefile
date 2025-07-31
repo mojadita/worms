@@ -1,29 +1,65 @@
-# $Id: Makefile,v 1.2 2011/08/04 12:47:36 luis Exp $
-# Author: Luis.Colorado@HispaLinux.ES
-# Date: sáb nov  4 22:48:46 MET 2000
+# Makefile -- script to build worms.
+# Author: Luis Colorado <luiscoloradourcola@gmail.com>
+# Date: Sat nov  4 22:48:46 MET 2000
 
-prefix=$(HOME)
+prefix=/usr/local
+execprefix=$(prefix)
 bindir=$(prefix)/bin
+datarootdir=$(prefix)/share
+mandir=$(datarootdir)/man
+man1dir=$(mandir)/man1
 
-INSTALL = install
-RM = rm -f
-targets = gusanos
+INSTALL            ?= install
+RM                 ?= rm -f
+targets            ?= worms
+LIBS               ?=-lncursesw
+GZIP               ?= gzip -v
+
+OS                 != uname -o
+
+OWN-FreeBSD        ?= root
+GRP-FreeBSD        ?= wheel
+OWN-GNU/Linux      ?= bin
+GRP-GNU/Linux      ?= bin
+
+own                ?= $(OWN-$(OS))
+grp                ?= $(GRP-$(OS))
+
+fmod               ?= 0444
+xmod               ?= 0555
+dmod               ?= 0555
 
 .PHONY: all clean install
+.SUFFIXES: .1.gz .1
 
 all: $(targets)
 
-gusanos_objs=gusanos.o
-gusanos_libs=-lncursesw
+worms_objs          =worms.o
+toclean            += $(worms_objs)
 
-gusanos: $(gusanos_objs)
-	$(CC) $(LDFLAGS) -o gusanos $(gusanos_objs) $(gusanos_libs)
+worms: $(worms_objs)
+	$(CC) $(LDFLAGS) -o $@ $($@_objs) $(LIBS)
+toclean            += worms
 
 clean:
-	$(RM) gusanos $(gusanos_objs)
+	$(RM) $(toclean)
 
-install: $(targets)
+toinstall = $(bindir)/worms $(man1dir)/worms.1.gz
+
+install: $(toinstall)
 	install -m 755 -d "$(bindir)"
 	install -m 711 $(targets) "$(bindir)"
+
+$(bindir)/worms: worms $(bindir)
+	$(INSTALL) -o $(own) -g $(grp) -m $(xmod) worms $(bindir)
+
+$(man1dir)/worms.1.gz: worms.1.gz $(man1dir)
+	$(INSTALL) -o $(own) -g $(grp) -m $(fmod) worms.1.gz $(man1dir)
+
+$(bindir) $(man1dir):
+	$(INSTALL) -o $(own) -g $(grp) -m $(dmod) -d $@
+
+.1.1.gz:
+	$(GZIP) < $< > $@
 
 # $Id: Makefile,v 1.2 2011/08/04 12:47:36 luis Exp $

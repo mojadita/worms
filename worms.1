@@ -1,0 +1,64 @@
+.Dd Jul 2025
+.Dt WORMS 1
+.Os
+.Sh NAME
+.Nm worms
+.Nd colored worms running on the screen.
+.Sh SYNOPSIS
+.Nm
+.Op Fl dcsah
+.Op Fl p Ar prob_dirchg
+.Op Ar ...
+.Sh DESCRIPTION
+The
+.Nm
+program draws a set of colored worms running on the screen on a
+cursor addressable screen.
+The drawing of worms is made by using box drawing characters, or
+ASCII characters, in case
+.Op a
+is selected.
+.Sh USAGE
+.Nm uses the following options to configure it for drawing the
+worms in different ways.
+.Bl -tag
+.It Fl d
+is used to write on stdout a set of calculated parameters to indicate
+how the worms will be drawn.
+.It Fl c
+is used to inhibit coloring the worms.
+These are drawn in the normal foreground color of the terminal, instead
+of using different colors for each worm.
+.It Fl s
+Draws the worm continuously on the screen without pausing for 20msec.
+as it is done normally.
+.It Fl a
+uses plain ASCII characters, instead of UTF-8 box drawing characters
+to write the characters.
+This gives a retro aspect to the program.
+.It Fl h
+prints a small help message on stdout and stops.
+Used to show the user how to parameterize the run of
+.Nm .
+.It Fl p Ar prob_dirchg
+controls the probability of turning left/right at each step.
+If you use a small value (minimum of 1, meaning 1%) then
+the worms turn less frequently, drawing long straight lines on the
+screen.
+.Pp
+This makes in general the worms to tend to aglutinate on the corners,
+as they start others blocking them to exit.
+If the probability is 100 the worms will tend to turn the direction at
+every step, only running straight when both sides are covered.
+.It Op Ar ...
+This allows you to specify a fixed number of worms (as many as
+parameters you include) of maximum lengths specified at each parameter
+for each worm.
+.Bd -literal
+$ worms 3 3 5
+.Ed
+.Pp
+will run the program showing three worms of lengths 3, 3 and 5,
+respectively.
+.Sh AUTHOR
+.An Luis Colorado Aq Mt luiscoloradourcola@gmail.com .

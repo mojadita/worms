@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include <ncursesw/curses.h>
+#include <ncurses.h>
 #include <getopt.h>
 
 #define PROB_C_DIREC    50
