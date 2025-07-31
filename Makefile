@@ -47,13 +47,14 @@ clean:
 toinstall = $(bindir)/worms $(man1dir)/worms.1.gz
 
 install: $(toinstall)
-	install -m 755 -d "$(bindir)"
-	install -m 711 $(targets) "$(bindir)"
 
-$(bindir)/worms: worms $(bindir)
+uninstall deinstall:
+	$(RM) $(toinstall)
+
+$(bindir)/worms: worms
 	$(INSTALL) -o $(own) -g $(grp) -m $(xmod) worms $(bindir)
 
-$(man1dir)/worms.1.gz: worms.1.gz $(man1dir)
+$(man1dir)/worms.1.gz: worms.1.gz
 	$(INSTALL) -o $(own) -g $(grp) -m $(fmod) worms.1.gz $(man1dir)
 
 $(bindir) $(man1dir):
