@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include <ncursesw/curses.h>
+#include <curses.h>
 #include <getopt.h>
 
 #define PROB_C_DIREC    50
@@ -126,18 +126,18 @@ struct {
 /* inicializamos la tabla de movimientos, definida justo aquí arriba */
 void init_tabla_movim(void)
 {
-	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '.' : ACS_URCORNER;
-	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
-	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? ',' : ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? ',' : ACS_ULCORNER;
-	tabla_movim[IZQUIERDA][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
-	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '`' : ACS_LLCORNER;
-	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '`' : ACS_LLCORNER;
-	tabla_movim[ABAJO    ][RECTO ].caracter = ascii_chars ? '|' : ACS_VLINE;
+	tabla_movim[ARRIBA   ][GIRO_I].caracter = ascii_chars ? '.'  : ACS_URCORNER;
+	tabla_movim[ARRIBA   ][RECTO ].caracter = ascii_chars ? '|'  : ACS_VLINE;
+	tabla_movim[ARRIBA   ][GIRO_D].caracter = ascii_chars ? ','  : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][GIRO_I].caracter = ascii_chars ? ','  : ACS_ULCORNER;
+	tabla_movim[IZQUIERDA][RECTO ].caracter = ascii_chars ? '-'  : ACS_HLINE;
+	tabla_movim[IZQUIERDA][GIRO_D].caracter = ascii_chars ? '`'  : ACS_LLCORNER;
+	tabla_movim[ABAJO    ][GIRO_I].caracter = ascii_chars ? '`'  : ACS_LLCORNER;
+	tabla_movim[ABAJO    ][RECTO ].caracter = ascii_chars ? '|'  : ACS_VLINE;
 	tabla_movim[ABAJO    ][GIRO_D].caracter = ascii_chars ? '\'' : ACS_LRCORNER;
 	tabla_movim[DERECHA  ][GIRO_I].caracter = ascii_chars ? '\'' : ACS_LRCORNER;
-	tabla_movim[DERECHA  ][RECTO ].caracter = ascii_chars ? '-' : ACS_HLINE;
-	tabla_movim[DERECHA  ][GIRO_D].caracter = ascii_chars ? '.' : ACS_URCORNER;
+	tabla_movim[DERECHA  ][RECTO ].caracter = ascii_chars ? '-'  : ACS_HLINE;
+	tabla_movim[DERECHA  ][GIRO_D].caracter = ascii_chars ? '.'  : ACS_URCORNER;
 
 	tabla_movim[ARRIBA   ][GIRO_I].nueva_dir = IZQUIERDA;
 	tabla_movim[ARRIBA   ][RECTO ].nueva_dir = ARRIBA;
@@ -189,10 +189,10 @@ void mueve_worm (refworm w)
 
 	/* calculamos la nueva posici¢n */
 	switch (dir_fut){
-	case ARRIBA: posy--; break;
-	case ABAJO: posy++; break;
+	case ARRIBA:    posy--; break;
+	case ABAJO:     posy++; break;
 	case IZQUIERDA: posx--; break;
-	case DERECHA: posx++;
+	case DERECHA:   posx++; break;
 	} /* switch */
 
 	/* si nada lo impide, podremos mover */
@@ -289,22 +289,22 @@ int main (int argc, char **argv)
 	while ((opt = getopt(argc, argv, "p:dsa")) != EOF) {
 #endif
 	  	switch(opt){
-		case 'd': debug = TRUE; break;
+		case 'd': debug = TRUE;          break;
 #if USE_COLORS
-		case 'c': want_colors = FALSE; break;
+		case 'c': want_colors = FALSE;   break;
 #endif
 		case 'p':
-			prob_c_direc = atoi(optarg);
-			break;
+			prob_c_direc = atoi(optarg); break;
 		case 's':
-			delay_flag = FALSE; break;
+			delay_flag = FALSE;          break;
 		case 'a':
-			ascii_chars = TRUE; break;
+			ascii_chars = TRUE;          break;
 		case 'h':
 		default:
 			do_usage(); exit(0);
 		} /* switch */
 	} /* while */
+
 	argc -= optind;
    	argv += optind;
 
@@ -313,14 +313,17 @@ int main (int argc, char **argv)
 #if USE_COLORS
 	start_color();
 	if (debug) {
-		printw ("has_colors() == %d\n", has_colors());
-		printw ("COLOR_PAIRS == %d\n", COLOR_PAIRS);
+		printw ("has_colors()     == %d\n", has_colors());
+		printw ("COLOR_PAIRS      == %d\n", COLOR_PAIRS);
 		printw ("CAN_CHANGE_COLOR == %d\n", can_change_color());
 	} /* if */
 	colors = 1;
 	if (want_colors && has_colors()) {
 	/* if (can_change_color()) { */
-#define DEFCOL(X) if (COLOR_PAIRS > colors) init_pair(colors++, X, COLOR_BLACK);
+#define DEFCOL(X) do {                                     \
+				if (COLOR_PAIRS > colors)                  \
+					init_pair(colors++, X, COLOR_BLACK);   \
+			} while (0) /* DEFCOL(X) */
 		DEFCOL(COLOR_RED);
 		DEFCOL(COLOR_GREEN);
 		DEFCOL(COLOR_YELLOW);
@@ -344,8 +347,7 @@ int main (int argc, char **argv)
 		tablero[i] = calloc(LINEAS, sizeof(int));
 
 	while (argc){
-    	refworm p;
-       	p = (refworm) malloc (sizeof (worm));
+    	refworm p = malloc (sizeof (worm));
 #if USE_COLORS
 	   	p->color = has_colors() ? my_random (colors) : 0;
 		if (debug)
@@ -369,8 +371,8 @@ int main (int argc, char **argv)
         p->lista_puntos->sig = p->lista_puntos;
         p->sig = lista_gusanos;
         lista_gusanos = p;
-        argc--;
-        argv++;
+
+        argc--; argv++;
 	} /* while */
 	if (lista_gusanos == NULL) {
     	argc = my_random (MAX_GUSANOS - MIN_GUSANOS) + MIN_GUSANOS;
@@ -392,9 +394,11 @@ int main (int argc, char **argv)
             p->lista_puntos->sig = p->lista_puntos;
             p->sig = lista_gusanos;
             lista_gusanos = p;
+
             argc--;
       	} /* while */
 	} /* if */
+
 #if USE_COLORS
 	if(debug) {
 		refresh();
@@ -404,7 +408,7 @@ int main (int argc, char **argv)
 
 	gusano_actual = lista_gusanos;
 	old_LINES = LINES;
-	old_COLS = COLS;
+	old_COLS  = COLS;
    	while (TRUE){
 		if (LINES != old_LINES || COLS != old_COLS) {
 			int i;
