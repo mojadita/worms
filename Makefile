@@ -1,6 +1,6 @@
-# Makefile -- script to build worms.
-# Author: Luis Colorado <luiscoloradourcola@gmail.com>
-# Date: Sat nov  4 22:48:46 MET 2000
+# $Id: Makefile,v 1.2 2011/08/04 12:47:36 luis Exp $
+# Author: Luis.Colorado@HispaLinux.ES
+# Date: sab nov  4 22:48:46 MET 2000
 
 prefix=/usr/local
 execprefix=$(prefix)

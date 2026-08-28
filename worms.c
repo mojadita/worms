@@ -17,13 +17,11 @@
 #define LINEAS          LINES
 #define COLUMNAS        COLS
 #define MIN_LONGITUD    3
-#define MAX_LONGITUD    1000
+#define MAX_LONGITUD    150
 #define MIN_GUSANOS     3
 #define MAX_GUSANOS     30
-#ifndef RETARDO
 #define RETARDO()       do {if (delay_flag) usleep(20000);} while(0)
-#endif
-#define my_random(X) (random()%(X))
+#define my_random(X)    (random()%(X))
 
 #ifndef USE_COLORS
 #define USE_COLORS 1
@@ -31,11 +29,12 @@
 
 #if USE_COLORS
 int colors;
-int want_colors = true;
+int want_colors             = true;
 #endif
-int debug       = false;
-int delay_flag  = true;
-int ascii_chars = false;
+
+int debug                   = false;
+int delay_flag              = true;
+int ascii_chars             = false;
 int has_changed_window_size = false;
 
 #if USE_COLORS
@@ -52,9 +51,9 @@ void imprime(int c, int x, int y)
 
 /* estructuras que definen al gusano */
 typedef struct posicion {
-   short            x;
-   short            y;
-}posicion;
+   short            x,
+                    y;
+} posicion;
 
 typedef struct worm {
 #if USE_COLORS
@@ -68,15 +67,14 @@ typedef struct worm {
                     cola;
 } worm;
 
-worm            *array_gusanos    = NULL; /* lista con los gusanos */
-struct posicion *array_posiciones = NULL; /* array con las posiciones */
-int numero_de_posiciones = 0,
-	numero_de_gusanos    = 0;
-
-int **tablero;
-int prob_c_direc = PROB_C_DIREC;
-
-
+/* variables globales */
+worm    *array_gusanos        = NULL; /* lista con los gusanos */
+struct posicion
+        *array_posiciones     = NULL; /* array con las posiciones */
+int      numero_de_posiciones = 0,
+         numero_de_gusanos    = 0;
+char   **tablero;
+int      prob_c_direc         = PROB_C_DIREC;
 
 #define GIRO_I       0
 #define RECTO        1
@@ -124,16 +122,16 @@ void init_tabla_movim(void)
     tabla_movim[DERECHA  ][GIRO_D].nueva_dir = ABAJO;
 } /* init_tabla_movim */
 
-/* -- primero calculamos la nueva direcci¢n,
-      colocamos en la pantalla el caracter correspondiente a la direcci¢n
-      actual y la nueva direcci¢n. Ajustamos la nueva direcci¢n.
-   -- Comprobamos si se puede mover el worm en la nueva direcci¢n.
-      Si es as¡, movemos la cabeza.
-      Si no es as¡, movemos la cola.
-   -- El worm se podr  mover en la nueva direcci¢n si no sobrepasa su lon-
-      gitud m xima permitida y si la casilla a donde va no est  ocupada.
-   -- Para mover la cabeza se coloca el worm en la nueva posici¢n.
-      Se aumenta la posici¢n de cabeza incluyendo la nueva posici¢n en la
+/* -- primero calculamos la nueva direccion,
+      colocamos en la pantalla el caracter correspondiente a la direccion
+      actual y la nueva direccion.  Ajustamos la nueva direccion.
+   -- Comprobamos si se puede mover el worm en la nueva direccion.
+      Si es asi, movemos la cabeza.
+      Si no es asi, movemos la cola.
+   -- El worm se podra mover en la nueva direccion si no sobrepasa su lon-
+      gitud maxima permitida y si la casilla a donde va no esta ocupada.
+   -- Para mover la cabeza se coloca el worm en la nueva posicion.
+      Se aumenta la posicion de cabeza incluyendo la nueva posicion en la
       lista de posiciones visitadas de cada worm.
    -- Para mover la cola
 */
@@ -143,23 +141,23 @@ void mueve_worm (worm *w)
     posicion *cola    = &w->array_segmentos[w->cola];
     int       dir_act = w->direccion;
 
-    int tipo_movim = RECTO;
-    if (my_random (100) <= prob_c_direc) {
+    int tipo_movim    = RECTO;
+    if (my_random(100) <= prob_c_direc) {
         tipo_movim = my_random(2)
                 ? GIRO_I
                 : GIRO_D;
     }
 
-    int dir_fut = tabla_movim [dir_act][tipo_movim].nueva_dir,
-        posx    = cabe->x,
-        posy    = cabe->y; /* nueva posici¢n */
+    int dir_fut       = tabla_movim [dir_act][tipo_movim].nueva_dir,
+        posx          = cabe->x,
+        posy          = cabe->y; /* posicion actual */
 
     /* calculamos la nueva posici¢n */
     switch (dir_fut) {
-	case ARRIBA:    --posy; break;
-	case ABAJO:     ++posy; break;
-	case IZQUIERDA: --posx; break;
-	case DERECHA:   ++posx; break;
+    case ARRIBA:    --posy; break;
+    case ABAJO:     ++posy; break;
+    case IZQUIERDA: --posx; break;
+    case DERECHA:   ++posx; break;
     }
 
     /* si nada lo impide, podremos mover */
@@ -170,16 +168,18 @@ void mueve_worm (worm *w)
             || posy < 0 || posy >= LINEAS)
         podemos_mover = false;
 
-    /* si esta posici¢n ya esta ocupada no podremos mover */
-    if (podemos_mover && tablero [posx][posy])
+    /* si esta posicion ya esta ocupada no podremos mover */
+    if (tablero [posx][posy])
         podemos_mover = false;
 
     /* si la longitud es la longitud maxima, no podremos mover */
-    if (w->max_longitud == w->longitud_act)
+    if (w->longitud_act == w->max_longitud)
         podemos_mover = false;
 
     if (podemos_mover) { /* movemos */
-        /* imprimimos el cuello en la antigua posici¢n */
+
+        /* imprimimos el cuello (el caracter de giro) en la posicion
+         * donde estaba la cabeza */
 #if USE_COLORS
         imprime(tabla_movim[dir_act][tipo_movim].caracter,
             cabe->x, cabe->y, w->color);
@@ -188,54 +188,60 @@ void mueve_worm (worm *w)
             cabe->x, cabe->y);
 #endif
 
-        /* crecemos por la cabeza */
+        /* crecemos un segmento por la cabeza */
         ++cabe; ++w->cabeza;
-        if (w->cabeza >= w->max_longitud) {
-            cabe      -= w->max_longitud;
-            w->cabeza -= w->max_longitud;
-		}
-		cabe->x = posx;
-		cabe->y = posy;
-		++w->longitud_act;
+        if (w->cabeza == w->max_longitud) {
+            cabe       = w->array_segmentos;
+            w->cabeza  = 0;
+        }
+        cabe->x = posx;
+        cabe->y = posy;
 
-        /* marcamos la nueva posici¢n */
+        /* aumentamos la longitud del gusano */
+        ++w->longitud_act;
+
+        /* marcamos la nueva posicion */
         tablero[posx][posy] = true;
 
         /* pintamos la nueva cabeza */
 #if USE_COLORS
-        imprime('O', posx, posy, w->color);
+        imprime('@', posx, posy, w->color);
 #else
-        imprime('O', posx, posy);
+        imprime('@', posx, posy);
 #endif
 
-        /* ajustamos la nueva direccion **/
+        /* ajustamos la nueva direccion */
         w->direccion = dir_fut;
 
-    } else { /* quitamos de la cola */
+    } else if (w->longitud_act > 1) {
+        /*     ^^^^^^^^^^^^^^^^^^^
+         * solo eliminamos si la longitud actual
+         * es mayor que 1 */
 
-        /* solo eliminamos si la longitud actual es mayor que 1 */
-        if (w->longitud_act > 1) {
-            posx = cola->x;
-            posy = cola->y;
+        posx = cola->x;
+        posy = cola->y;
 
         /* limpiamos la zona de la pantalla afectada */
 #if USE_COLORS
-            imprime (' ', posx, posy, 0);
+        imprime(' ', posx, posy, 0);
 #else
-            imprime (' ', posx, posy);
+        imprime(' ', posx, posy);
 #endif
 
-            /* limpiamos la zona del tablero afectada */
-            tablero[posx][posy] = false;
+        /* disminuimos la longitud total del gusano */
+        --w->longitud_act;
 
-            /* eliminamos la posici¢n de cola del worm */
-			++cola; ++w->cola;
-			if (w->cola >= w->max_longitud) {
-				cola    -= w->max_longitud;
-				w->cola -= w->max_longitud;
-			}
+        /* limpiamos la posicion del tablero afectada */
+        tablero[posx][posy] = false;
 
-        } /* if */
+        /* eliminamos la posicion de la cola del gusano,
+         * para ello, simplemente movemos la referencia
+         * a la cola hacia adelante. */
+        ++cola; ++w->cola;
+        if (w->cola == w->max_longitud) {
+            cola     = w->array_segmentos;
+            w->cola  = 0;
+        }
     } /* if */
 } /* mueve_worm */
 
@@ -293,7 +299,7 @@ int main(int argc, char **argv)
     srandom(time(NULL));
     initscr();
 
-#if USE_COLORS
+#if USE_COLORS /*     { */
     start_color();
     if (debug) {
         printw("has_colors()     == %d\n", has_colors());
@@ -313,13 +319,14 @@ int main(int argc, char **argv)
         DEFCOL(COLOR_BLUE);
         DEFCOL(COLOR_MAGENTA);
         DEFCOL(COLOR_CYAN);
+        DEFCOL(COLOR_WHITE);
     /*} else colors = COLOR_PAIRS; */
     } /* if */
     if (debug) {
         printw("COLORS == %d\n", colors);
     } /* if */
 
-#endif
+#endif /* USE_COLORS  } */
 
     /* inicializamos la tabla de movimientos */
     init_tabla_movim();
@@ -334,7 +341,7 @@ int main(int argc, char **argv)
         numero_de_gusanos = my_random(MAX_GUSANOS - MIN_GUSANOS) + MIN_GUSANOS;
     }
 
-	/* creamos el array de gusanos */
+    /* creamos el array de gusanos */
     array_gusanos = calloc(numero_de_gusanos, sizeof(array_gusanos[0]));
 
     {   /* bloque local */
@@ -376,6 +383,24 @@ int main(int argc, char **argv)
             g->longitud_act     = 1;
             g->cabeza           = 0;
             g->cola             = 0;
+            if (debug) {
+                printf("gusano<%d>:\r\n"
+                       "  max_longitud: %5d\r\n"
+                       "  longitud_act: %5d\r\n"
+                       "  direccion   : %5d\r\n"
+                       "  array_segmentos: %p\r\n"
+                       "  cabeza      : %5d\r\n"
+                       "  cola        : %5d\r\n",
+                       i,
+                       g->max_longitud,
+                       g->longitud_act,
+                       g->direccion,
+                       g->array_segmentos,
+                       g->cabeza,
+                       g->cola);
+				fflush(stdout);
+                sleep(5);
+            }
         }
     }
 
