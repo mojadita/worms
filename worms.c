@@ -169,7 +169,7 @@ void mueve_worm (worm *w)
         podemos_mover = false;
 
     /* si esta posicion ya esta ocupada no podremos mover */
-    if (tablero [posx][posy])
+    if (podemos_mover && tablero[posx][posy])
         podemos_mover = false;
 
     /* si la longitud es la longitud maxima, no podremos mover */
@@ -348,7 +348,8 @@ int main(int argc, char **argv)
         worm *p                  = array_gusanos;
         for (int i = 0; i < numero_de_gusanos; ++i, ++p) {
     #if USE_COLORS
-            p->color = has_colors() ? my_random(colors) : 0;
+            if (want_colors)
+                p->color = has_colors() ? my_random(colors) : 0;
 
             if (debug)
                 printw("COLOR DEL GUSANO<%d>: %d\n", i, p->color);
@@ -374,8 +375,11 @@ int main(int argc, char **argv)
     {   /* contenido de los gusanos (el primer segmento) */
         worm     *g = array_gusanos;
         posicion *p = array_posiciones;
-        for (int i = 0; i < numero_de_gusanos; ++i, p += g->max_longitud, ++g) {
-            g->array_segmentos  = array_posiciones;
+        for (   int i = 0;
+                i < numero_de_gusanos;
+                ++i, p += g->max_longitud, ++g)
+        {
+            g->array_segmentos  = p;
             posicion *segm      = g->array_segmentos;
             segm->x             = my_random(COLUMNAS);
             segm->y             = my_random(LINEAS);
@@ -383,24 +387,6 @@ int main(int argc, char **argv)
             g->longitud_act     = 1;
             g->cabeza           = 0;
             g->cola             = 0;
-            if (debug) {
-                printf("gusano<%d>:\r\n"
-                       "  max_longitud: %5d\r\n"
-                       "  longitud_act: %5d\r\n"
-                       "  direccion   : %5d\r\n"
-                       "  array_segmentos: %p\r\n"
-                       "  cabeza      : %5d\r\n"
-                       "  cola        : %5d\r\n",
-                       i,
-                       g->max_longitud,
-                       g->longitud_act,
-                       g->direccion,
-                       g->array_segmentos,
-                       g->cabeza,
-                       g->cola);
-				fflush(stdout);
-                sleep(5);
-            }
         }
     }
 
