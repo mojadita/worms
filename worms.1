@@ -16,7 +16,7 @@ program draws a set of colored worms running on the screen on a
 cursor addressable screen.
 The drawing of worms is made by using box drawing characters, or
 ASCII characters, in case
-.Op a
+.Fl a
 is selected.
 .Sh USAGE
 .Nm uses the following options to configure it for drawing the
@@ -62,3 +62,10 @@ will run the program showing three worms of lengths 3, 3 and 5,
 respectively.
 .Sh AUTHOR
 .An Luis Colorado Aq Mt luiscoloradourcola@gmail.com .
+.Pp
+The first version of this program was written by the author around 1984
+for the IBM Pc, using BIOS calls to draw the worms in the screen.
+.Pp
+Later, in 1988 it was ported to unix, to run under curses (but no colors
+where available at that time, so it was written to draw black and white
+worms)  Later, it incorporated colors, as it appears now.
