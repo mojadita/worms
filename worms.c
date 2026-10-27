@@ -12,13 +12,17 @@
 #include <curses.h>
 #include <getopt.h>
 
-#define DIRECT_CHG_PROB 50
-#define MIN_LENGTH      3
+#define DIRECT_CHG_PROB  50
+#define MIN_LENGTH        3
 #define MAX_LENGTH      150
-#define MIN_WORMS     3
-#define MAX_WORMS     30
-#define DELAY()       do {if (delay_flag) usleep(20000);} while(0)
-#define my_random(X)    (random()%(X))
+#define MIN_WORMS         3
+#define MAX_WORMS        30
+#define DELAY()            \
+	do {                   \
+		if (delay_flag)    \
+			usleep(20000); \
+	} while(0)
+#define my_random(X) (random()%(X))
 
 #ifndef USE_COLORS
 #define USE_COLORS 1
@@ -85,49 +89,27 @@ int      heading_chg_probab = DIRECT_CHG_PROB;
 #define DIRS_NUMBER  4
 
 struct {
-   int              character;
-   int              new_direction;
+   int    character;
+   int    new_direction;
 } moves_table [DIRS_NUMBER][TURNS_NUMBER];
+
+#define CH(_c, _cc) (ascii_chars ? _c : ACS_##_cc)
 
 /* initialize movements table, defined just above */
 void init_moves_table(void)
 {
-    moves_table[UP_DIR  ][TURN_L   ].character = ascii_chars
-            ? '.'
-            : ACS_URCORNER;
-    moves_table[UP_DIR  ][STRAIGHT ].character = ascii_chars
-            ? '|'
-            : ACS_VLINE;
-    moves_table[UP_DIR  ][TURN_R   ].character = ascii_chars
-            ? ','
-            : ACS_ULCORNER;
-    moves_table[LEFT_DIR][TURN_L   ].character = ascii_chars
-            ? ','
-            : ACS_ULCORNER;
-    moves_table[LEFT_DIR][STRAIGHT ].character = ascii_chars
-            ? '-'
-            : ACS_HLINE;
-    moves_table[LEFT_DIR][TURN_R   ].character = ascii_chars
-            ? '`'
-            : ACS_LLCORNER;
-    moves_table[DOWN_DIR][TURN_L   ].character = ascii_chars
-            ? '`'
-            : ACS_LLCORNER;
-    moves_table[DOWN_DIR][STRAIGHT ].character = ascii_chars
-            ? '|'
-            : ACS_VLINE;
-    moves_table[DOWN_DIR][TURN_R   ].character = ascii_chars
-            ? '\''
-            : ACS_LRCORNER;
-    moves_table[RIGHT_DIR][TURN_L  ].character = ascii_chars
-            ? '\''
-            : ACS_LRCORNER;
-    moves_table[RIGHT_DIR][STRAIGHT].character = ascii_chars
-            ? '-'
-            : ACS_HLINE;
-    moves_table[RIGHT_DIR][TURN_R  ].character = ascii_chars
-            ? '.'
-            : ACS_URCORNER;
+    moves_table[UP_DIR  ][TURN_L   ].character = CH('.',URCORNER);
+    moves_table[UP_DIR  ][STRAIGHT ].character = CH('|',VLINE);
+    moves_table[UP_DIR  ][TURN_R   ].character = CH(',',ULCORNER);
+    moves_table[LEFT_DIR][TURN_L   ].character = CH(',',ULCORNER);
+    moves_table[LEFT_DIR][STRAIGHT ].character = CH('-',HLINE);
+    moves_table[LEFT_DIR][TURN_R   ].character = CH('`',LLCORNER);
+    moves_table[DOWN_DIR][TURN_L   ].character = CH('`',LLCORNER);
+    moves_table[DOWN_DIR][STRAIGHT ].character = CH('|',VLINE);
+    moves_table[DOWN_DIR][TURN_R   ].character = CH('\'',LRCORNER);
+    moves_table[RIGHT_DIR][TURN_L  ].character = CH('\'',LRCORNER);
+    moves_table[RIGHT_DIR][STRAIGHT].character = CH('-',HLINE);
+    moves_table[RIGHT_DIR][TURN_R  ].character = CH('.',URCORNER);
 
     moves_table[UP_DIR  ][TURN_L   ].new_direction = LEFT_DIR;
     moves_table[UP_DIR  ][STRAIGHT ].new_direction = UP_DIR;
