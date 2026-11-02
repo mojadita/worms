@@ -276,9 +276,9 @@ int main(int argc, char **argv)
            old_COLS;
 
 #if USE_COLORS
-    while ((opt = getopt(argc, argv, "p:dcsa")) != EOF) {
+    while ((opt = getopt(argc, argv, "p:dcsah")) != EOF) {
 #else
-    while ((opt = getopt(argc, argv, "p:dsa")) != EOF) {
+    while ((opt = getopt(argc, argv, "p:dsah")) != EOF) {
 #endif
         switch(opt){
         case 'd': debug        = true;         break;
