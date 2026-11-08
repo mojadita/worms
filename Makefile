@@ -11,27 +11,32 @@ man1dir=$(mandir)/man1
 
 INSTALL            ?= install
 RM                 ?= rm -f
-targets            ?= worms
-LIBS               ?=-lncursesw
+targets            ?= worms worms.1.gz
 GZIP               ?= gzip -v
+toclean            += $(targets)
 
-OS                 != uname -s
+OS                 != uname -o
 
-OWN-FreeBSD        ?= root
-GRP-FreeBSD        ?= wheel
-OWN-GNU/Linux      ?= bin
-GRP-GNU/Linux      ?= bin
+OWN-FreeBSD        ?= -o root
+GRP-FreeBSD        ?= -g wheel
+OWN-GNU/Linux      ?= -o bin
+GRP-GNU/Linux      ?= -g bin
+
+LIBS-Freebsd       ?= -lncursesw
+LIBS-GNU/Linux     ?= -lncursesw
+LIBS-Cygwin        ?= -lncurses
+LIBS               ?= $(LIBS-$(OS))
 
 own                ?= $(OWN-$(OS))
 grp                ?= $(GRP-$(OS))
 
-fmod               ?= 0444
-xmod               ?= 0555
-dmod               ?= 0555
+fmod               ?= -m 0444
+xmod               ?= -m 0555
+dmod               ?= -m 0555
 
 LIBS-FreeBSD        = -lncursesw
 LIBS-Linux          = -lncursesw
-LIBS-Cygwin         = -lncursesw
+LIBS-Cygwin         = -lncurses
 
 LIBS                = $(LIBS-$(OS))
 
@@ -62,10 +67,10 @@ worms: $(worms_objs)
 	$(CC) $(LDFLAGS) -o $@ $($@_objs) $(LIBS)
 
 $(bindir)/worms: worms
-	$(INSTALL) -o $(own) -g $(grp) -m $(xmod) worms $@
+	$(INSTALL) $(own) $(grp) $(xmod) worms $@
 
 $(man1dir)/worms.1.gz: worms.1.gz
-	$(INSTALL) -o $(own) -g $(grp) -m $(fmod) worms.1.gz $@
+	$(INSTALL) $(own) $(grp) $(fmod) worms.1.gz $@
 
 worms.1.gz: worms.1
 	$(GZIP) < worms.1 > $@
