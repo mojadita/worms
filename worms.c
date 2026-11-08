@@ -21,37 +21,26 @@
 #define MIN_WORMS         3
 #define MAX_WORMS        30
 #define DELAY()            \
-	do {                   \
-		if (delay_flag)    \
-			usleep(20000); \
-	} while(0)
+    do {                   \
+        if (delay_flag)    \
+            usleep(20000); \
+    } while(0)
 #define my_random(X) (random()%(X))
 
-#ifndef USE_COLORS
-#define USE_COLORS          1
-#endif
-
-#if USE_COLORS
 int colors;
-int want_colors             = true;
-#endif
-
+int use_colors              = true;
 int debug                   = false;
 int delay_flag              = true;
 int ascii_chars             = false;
 int has_changed_window_size = false;
 
-#if USE_COLORS
 void do_print(int c, int x, int y, int col)
 {
-    mvaddch(y,x, COLOR_PAIR(col) | c);
+    if (use_colors) {
+        c |= COLOR_PAIR(col);
+    }
+    mvaddch(y, x, c);
 }
-#else
-void do_print(int c, int x, int y)
-{
-    mvaddch(y,x, c);
-}
-#endif
 
 /* structs defining the worm */
 typedef struct segment {
@@ -60,9 +49,7 @@ typedef struct segment {
 } segment;
 
 typedef struct worm {
-#if USE_COLORS
    int              color;
-#endif
    int              max_length;
    int              curr_length;
    int              direction;
@@ -163,9 +150,9 @@ void do_move_worm (worm *w)
 
     /* calculate next position */
     switch (fut_hdg) {
-    case UP_DIR:    --y_pos; break;
-    case DOWN_DIR:  ++y_pos; break;
-    case LEFT_DIR:  --x_pos; break;
+    case UP_DIR   : --y_pos; break;
+    case DOWN_DIR : ++y_pos; break;
+    case LEFT_DIR : --x_pos; break;
     case RIGHT_DIR: ++x_pos; break;
     }
 
@@ -182,24 +169,22 @@ void do_move_worm (worm *w)
         can_move = false;
 
     /* if length = max we cannot move */
-    if (w->curr_length == w->max_length)
+    if (w->curr_length == w->max_length) {
         can_move = false;
+    }
 
     if (can_move) { /* do move */
 
         /* draw the worm neck where the head was */
-#if USE_COLORS
         do_print(moves_table[curr_hdg][move_type].character,
-            head->x, head->y, w->color);
-#else
-        do_print(moves_table[curr_hdg][move_type].character,
-            head->x, head->y);
-#endif
+                head->x,
+                head->y,
+                w->color);
 
         /* grow a worm segment */
         ++head; ++w->head;
         if (w->head == w->max_length) {
-            head       = w->segments_array;
+            head     = w->segments_array;
             w->head  = 0;
         }
         head->x = x_pos;
@@ -212,11 +197,7 @@ void do_move_worm (worm *w)
         board[x_pos][y_pos] = true;
 
         /* draw the new head */
-#if USE_COLORS
         do_print('@', x_pos, y_pos, w->color);
-#else
-        do_print('@', x_pos, y_pos);
-#endif
 
         /* adjust the heading */
         w->direction = fut_hdg;
@@ -229,11 +210,7 @@ void do_move_worm (worm *w)
         y_pos = tail->y;
 
         /* clean the freed square */
-#if USE_COLORS
         do_print(' ', x_pos, y_pos, 0);
-#else
-        do_print(' ', x_pos, y_pos);
-#endif
 
         /* adjust the length */
         --w->curr_length;
@@ -253,20 +230,21 @@ void do_move_worm (worm *w)
 
 void do_usage(void)
 {
-    printf("Usage: worms [ -acdhs ] [ -p prob ] [ max_sz ... ]\n");
-    printf("paremeters:\n");
-    printf("   -p prob allows to indicate the probability of heading\n"
-           "           change of the worms.\n");
-    printf("   -d      debugging run (shows verbose output).\n");
-    printf("   -s      don't use delay between refreshes.\n");
-    printf("   -a      use ASCII characters for worms, instead of\n"
-           "           box chars.\n");
-#if USE_COLORS
-    printf("   -c      don't use colors.\n");
-#endif
-    printf("   -h      help.  This optpion.  For more information, see worms(1)\n");
-    printf("           manual page.\n");
-    printf("   max_sz  use this maximum size for the i-esim worm\n");
+    printf(
+        "Usage: worms [ -acdhs ] [ -p prob ] [ max_sz ... ]\n"
+        "paremeters:\n"
+        "   -p prob allows to indicate the probability of "
+        "heading\n"
+        "           change of the worms.\n"
+        "   -d      debugging run (shows verbose output).\n"
+        "   -s      don't use delay between refreshes.\n"
+        "   -a      use ASCII characters for worms, instead of\n"
+        "           box chars.\n"
+        "   -c      don't use colors.\n"
+        "   -h      help.  This option.  For more information,\n"
+        "           see worms(1)\n"
+        "           manual page.\n"
+        "   max_sz  use this maximum size for the i-esim worm\n");
 } /* do_usage */
 
 /* MAIN PROGRAM */
@@ -280,16 +258,10 @@ int main(int argc, char **argv)
     int    old_LINES,
            old_COLS;
 
-#if USE_COLORS
     while ((opt = getopt(argc, argv, "p:dcsah")) != EOF) {
-#else
-    while ((opt = getopt(argc, argv, "p:dsah")) != EOF) {
-#endif
         switch(opt){
         case 'd': debug        = true;         break;
-#if USE_COLORS
-        case 'c': want_colors  = false;        break;
-#endif
+        case 'c': use_colors   = false;        break;
         case 'p':
             heading_chg_probab = atoi(optarg); break;
         case 's':
@@ -309,27 +281,33 @@ int main(int argc, char **argv)
     /* LET'S START... */
     initscr();
 
-#if USE_COLORS /*     { */
-    if (want_colors && has_colors()) {
-        start_color();
+    if (!has_colors()) {
+        use_colors = false;
     }
+
+    if (use_colors)
+        start_color();
+
     if (debug) {
         printw("has_colors()     == %d\n", has_colors());
         printw("COLOR_PAIRS      == %d\n", COLOR_PAIRS);
         printw("CAN_CHANGE_COLOR == %d\n", can_change_color());
-    } /* if */
+    }
 
     colors = 0;
 
     /* check if we should use colors */
-    if (want_colors && has_colors()) {
 
-        /* if (can_change_color()) { */
+    if (use_colors) {
 
-#define DEFCOL(X) do {  /*           { */                \
-                if (COLOR_PAIRS > colors)                \
-                    init_pair(colors++, X, COLOR_BLACK); \
-            } while (0) /* DEFCOL(X) } */
+#define DEFCOL(X) do {  /*     { */ \
+        if (colors < COLOR_PAIRS) { \
+            init_pair(colors,       \
+                    X,              \
+                    COLOR_BLACK);   \
+            colors++;               \
+        }                           \
+    } while (0) /* DEFCOL(X)   } */
 
         DEFCOL(COLOR_RED);
         DEFCOL(COLOR_GREEN);
@@ -339,15 +317,11 @@ int main(int argc, char **argv)
         DEFCOL(COLOR_CYAN);
         DEFCOL(COLOR_WHITE);
 
-        /* } else colors = COLOR_PAIRS; */
-
     } /* if */
 
     if (debug) {
         printw("COLORS == %d\n", colors);
     } /* if */
-
-#endif /* USE_COLORS  } */
 
     /* initialize movements table */
     init_moves_table();
@@ -365,18 +339,20 @@ int main(int argc, char **argv)
     }
 
     /* create the array of worms */
-    worms_array = calloc(worms_number, sizeof(worms_array[0]));
+    worms_array = calloc(
+            worms_number,
+            sizeof(worms_array[0]));
 
     {   /* phase #1 */
         worm *w = worms_array;
         for (int i = 0; i < worms_number; ++i, ++w) {
-#if USE_COLORS
-            if (want_colors)
-                w->color = my_random(colors);
+
+            w->color = use_colors
+                ? i % colors
+                : 0;
 
             if (debug)
                 printw("WORM #%d COLOR: %d\n", i, w->color);
-#endif
 
             if (i < argc)
                 w->max_length = atoi( argv[i] );
@@ -413,18 +389,16 @@ int main(int argc, char **argv)
             segm->x            = my_random(COLS);
             segm->y            = my_random(LINES);
             g->direction       = my_random(4);
-            g->curr_length      = 1;
+            g->curr_length     = 1;
             g->head            = 0;
             g->tail            = 0;
         }
     }
 
-#if USE_COLORS
-    if(debug) {
+    if (debug) {
         refresh();
-        sleep(5);
+        sleep(10);
     } /* if */
-#endif
 
     /* START RUNNING THE LOOP */
     old_LINES = LINES;
@@ -443,13 +417,13 @@ int main(int argc, char **argv)
               current_worm < end_worms;
               ++current_worm)
         {
-            do_move_worm (current_worm);
+            do_move_worm(current_worm);
         }
 
         /* put the cursor at the lowest left position,
          * so it doesn't seem to follow the last worm
          * in the set */
-        move(LINES-1, 0);
+        move(LINES - 1, 0);
 
         /* draw */
         refresh();
