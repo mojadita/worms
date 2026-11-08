@@ -1,6 +1,8 @@
 # $Id: Makefile,v 1.2 2011/08/04 12:47:36 luis Exp $
 # Author: Luis.Colorado@HispaLinux.ES
 # Date: sab nov  4 22:48:46 MET 2000
+# Copyright: (C) 1980-2026 Luis Colorado.  All rights reserved.
+# License: BSD v2
 
 prefix=/usr/local
 execprefix=$(prefix)
@@ -11,9 +13,7 @@ man1dir=$(mandir)/man1
 
 INSTALL            ?= install
 RM                 ?= rm -f
-targets            ?= worms worms.1.gz
 GZIP               ?= gzip -v
-toclean            += $(targets)
 
 OS                 != uname -o
 
@@ -42,7 +42,8 @@ LIBS                = $(LIBS-$(OS))
 
 INSTALL             = install
 RM                 ?= rm -f
-targets             = worms
+
+targets             = worms worms.1.gz
 toclean            += $(targets)
 
 to_install          = $(bindir)/worms \
@@ -61,18 +62,16 @@ clean:
 install: $(to_install)
 
 uninstall deinstall:
-	$(RM) $(toinstall)
+	-$(RM) $(to_install)
 
 worms: $(worms_objs)
 	$(CC) $(LDFLAGS) -o $@ $($@_objs) $(LIBS)
 
 $(bindir)/worms: worms
-	$(INSTALL) $(own) $(grp) $(xmod) worms $@
+	-$(INSTALL) $(own) $(grp) $(xmod) worms $@
 
 $(man1dir)/worms.1.gz: worms.1.gz
-	$(INSTALL) $(own) $(grp) $(fmod) worms.1.gz $@
+	-$(INSTALL) $(own) $(grp) $(fmod) worms.1.gz $@
 
 worms.1.gz: worms.1
 	$(GZIP) < worms.1 > $@
-
-# $Id: Makefile,v 1.2 2011/08/04 12:47:36 luis Exp $

@@ -1,6 +1,9 @@
 /* $Id: gusanos.c,v 1.10 2014/02/11 10:04:04 luis Exp $
- * Author: Luis.Colorado@HispaLinux.ES
+ * Author: Luis Colorado <luiscoloradourcola@gmail.com>
  * Date: Sat Mar 11 22:05:03 MET 2000
+ * Copyright: (c) 1988-2026 Luis Colorado.  All rights reserved.
+ * License: BSD v2
+ *
  * UNIX version, with ncurses lib.
  */
 
@@ -25,7 +28,7 @@
 #define my_random(X) (random()%(X))
 
 #ifndef USE_COLORS
-#define USE_COLORS 1
+#define USE_COLORS          1
 #endif
 
 #if USE_COLORS
