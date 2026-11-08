@@ -250,7 +250,7 @@ void do_move_worm (worm *w)
 
 void do_usage(void)
 {
-    printf("Usage: worms [ -s ] [ -p prob ] [ max_sz ... ]\n");
+    printf("Usage: worms [ -acdhs ] [ -p prob ] [ max_sz ... ]\n");
     printf("paremeters:\n");
     printf("   -p prob allows to indicate the probability of heading\n"
            "           change of the worms.\n");
