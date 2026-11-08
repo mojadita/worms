@@ -264,7 +264,7 @@ void do_usage(void)
 #if USE_COLORS
     printf("   -c      don't use colors.\n");
 #endif
-    printf("   -h      help.  This optpion.  For more information, see worms(1)\n");
+    printf("   -h      help.  This option.  For more information, see worms(1)\n");
     printf("           manual page.\n");
     printf("   max_sz  use this maximum size for the i-esim worm\n");
 } /* do_usage */
